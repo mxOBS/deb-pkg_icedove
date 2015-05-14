@@ -1,0 +1,87 @@
+Icedove for Debian
+------------------
+
+Icedove is the Thunderbird email client from Mozilla rebranded by Debian.
+
+Mozilla has changed the kind of developing and managing Thunderbird and make an
+announcement about this on July 8 2012. Since this announcement Mozilla decided
+to change the focus of there own software development and will put more action
+on important web projects and of course on FirefoxOS. Mozilla plans to open the
+Thunderbird development to a more community driven project but will also be
+there for security and stability maintenance. There are no plans to close the
+packaging of Icedove from the Debian side, but the future will see where the
+upstream project will go to.
+As long as Mozilla will provide ESR versions there will be packaged versions of
+those inside the various release of Debian.
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Sun, 2 July 2013 21:32:07 +0100
+
+Downgrading TLS security
+------------------------
+
+If your provider doesn't support TLS 1.2 and you can't make him
+upgrade you can change:
+
+    "security.tls.version.min"
+
+and/or
+
+    "security.tls.version.max"
+
+in about:config (available via "Edit ->> + Preferences -> Advanced ->
+General -> Config Editor"). For details see
+http://kb.mozillazine.org/Security.tls.version.* .
+
+Note that changing these values decreases your transport level
+security. For more details see:
+
+https://developer.mozilla.org/en-US/docs/Mozilla/Projects/NSS
+https://bugzilla.mozilla.org/show_bug.cgi?id=480514
+https://wiki.mozilla.org/Security/Server_Side_TLS
+http://en.wikipedia.org/wiki/Network_Security_Services
+http://kb.mozillazine.org/Connection_errors_-_SMTP
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=761245
+https://tools.ietf.org/html/draft-ietf-tls-downgrade-scsv-00
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Wed, 15 Oct 2014 18:38:00 +0200
+
+Reactivateing SSLV3 connectivity
+--------------------------------
+
+Due to POODLE and BEAST SSLv3 encrypted connections are not considered secure
+anymore. See [1], [2] and [3] for details. If you need to reactivate SSLv3 to
+use Icedove against legacy systems you have to change the settings for
+
+    "security.tls.version.min"
+
+and set the value to '0'.
+
+This setting can be found in the about:config summary.
+(available via "Edit ->> + Preferences -> Advanced -> General -> Config Editor").
+For details see
+http://kb.mozillazine.org/Security.tls.version.* as written above.
+
+Please read also:
+[1] http://www.cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-3389
+[2] https://www.openssl.org/~bodo/ssl-poodle.pdf
+[3] https://blog.mozilla.org/security/2014/10/14/the-poodle-attack-and-the-end-of-ssl-3-0/
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Wed, 12 Nov 2014 19:38:00 +0100
+
+Plugins and Icedove settings
+----------------------------
+
+There are at least one known plugin that conflict with the change of the
+security settings from above.
+The user Brent S. Elmer has reported that the plugin 'HTTPS Everywhere' from
+the Electronic Frontier Foundation is blocking a permanent change of the
+setting "security.tls.version.min". Note that this behavior is no Debian
+related issue.
+
+Please report other plugins and extensions that doesn't work well with the
+security settings.
+
+[1] https://www.eff.org/https-everywhere
+[2] https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=774790
+
+ -- Carsten Schoenert <c.schoenert@t-online.de>  Sun, 18 Jan 2015 9:34:00 +0100

@@ -1,0 +1,79 @@
+mozilla/build/mobile/robocop/robotium-solo-4.3.1.jar
+mozilla/build/mobile/sutagent/android/network-libs/commons-net-2.0-javadoc.jar
+mozilla/build/mobile/sutagent/android/network-libs/commons-net-2.0-sources.jar
+mozilla/build/mobile/sutagent/android/network-libs/commons-net-2.0.jar
+mozilla/build/mobile/sutagent/android/network-libs/commons-net-ftp-2.0.jar
+mozilla/build/mobile/sutagent/android/network-libs/jmdns.jar
+mozilla/other-licenses/7zstub/firefox/7zSD.sfx
+mozilla/other-licenses/nsis/Plugins
+mozilla/other-licenses/nsis/nsisui.exe
+mozilla/toolkit/mozapps/update/updater/macbuild/Contents/Resources/English.lproj/MainMenu.nib/keyedobjects.nib
+mozilla/toolkit/mozapps/update/updater/macbuild/Contents/PkgInfo
+mozilla/toolkit/crashreporter/google-breakpad/autotools/compile
+mozilla/toolkit/crashreporter/google-breakpad/src/tools/solaris/dump_syms/testdata/dump_syms_regtest.o
+mozilla/toolkit/crashreporter/google-breakpad/src/tools/windows/binaries
+mozilla/toolkit/crashreporter/tools/win32
+mozilla/intl/unicharutil/tools/data/case.dat
+mozilla/intl/unicharutil/tools/data/cmbcl.dat
+mozilla/intl/unicharutil/tools/data/ctype.dat
+mozilla/intl/unicharutil/tools/data/decomp.dat
+mozilla/intl/unicharutil/tools/data/num.dat
+mozilla/python/psutil/_psutil_linux.so
+mozilla/python/psutil/_psutil_posix.so
+mozilla/python/psutil/build
+mozilla/build/pgo/blueprint/valid.png
+mozilla/netwerk/protocol/ftp/doc/rfc959.txt
+mozilla/layout/doc
+mozilla/content/xml/tests
+mozilla/image/test/reftest/pngsuite-transparency
+mozilla/image/test/reftest/reftest.list /pngsuite-transparency/d
+mozilla/browser/locales/en-US/searchplugins/amazondotcom.xml s,>data:.*<, type="image/x-icon">http://www.amazon.com/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/answers.xml s,>data:.*<, type="image/x-icon">http://www.answers.com/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/bing.xml s,>data:.*<, type="image/x-icon">http://www.bing.com/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/creativecommons.xml s,>data:.*<, type="image/x-icon">http://www.creativecommons.org/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/eBay.xml s,>data:.*<, type="image/x-icon">http://www.ebay.com/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/google.xml s,>data:.*<, type="image/x-icon">http://www.google.com/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/twitter.xml s,>data:.*<, type="image/x-icon">http://www.twitter.com/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/wikipedia.xml s,>data:.*<, type="image/x-icon">http://en.wikipedia.org/favicon.ico<,
+mozilla/browser/locales/en-US/searchplugins/yahoo.xml s,>data:.*<, type="image/x-icon">http://www.yahoo.com/favicon.ico<,
+other-licenses/7zstub
+ldap/sdks/c-sdk/ldap/examples/macintosh
+ldap/sdks/c-sdk/ldap/libraries/macintosh/LDAPClient.mcp
+ldap/sdks/java-sdk/ldapjdk/lib/jaas.jar
+ldap/sdks/java-sdk/ldapjdk/lib/jnet.jar
+ldap/sdks/java-sdk/ldapjdk/lib/jss32_stub.jar
+ldap/sdks/java-sdk/ldapjdk/lib/jsse.jar
+ldap/sdks/java-sdk/ldapsp/lib/jndi.jar
+mail/jquery/jquery-1.6.4.min.js
+mail/jquery/jquery-ui-1.8.2.min.js
+mozilla/addon-sdk/source/examples/annotator/data/jquery-1.4.2.min.js
+mozilla/addon-sdk/source/examples/reddit-panel/data/jquery-1.4.4.min.js
+mozilla/addon-sdk/source/python-lib/cuddlefish/_version.py
+mozilla/content/html/content/reftests/toblob-todataurl/sample.js
+mozilla/layout/generic/crashtests/simple_blank.swf
+mozilla/js/src/devtools/jint/sunspider/string-unpack-code.js
+mozilla/js/src/jit-test/lib/mandelbrot-results.js
+mozilla/python/mock-1.0.0/html/searchindex.js
+mozilla/python/mock-1.0.0/html/_static/jquery.js
+mozilla/python/mock-1.0.0/html/_static/underscore.js
+mozilla/browser/components/translation/cld2/cld-worker.js
+mozilla/dom/imptests/html/js/builtins/Math.maxmin.js
+# don't filter out the following JS file, it's needed later while building
+#mozilla/testing/marionette/atoms/atoms.js
+mozilla/testing/marionette/client/marionette/runner/mixins/resources/htmlreport/jquery.js
+mozilla/testing/mochitest/MochiKit/packed.js
+mozilla/testing/mozbase/mozrunner/mozrunner/resources/metrotestharness.exe
+mozilla/gfx/angle/src/libEGL/libEGL.rc
+mozilla/gfx/angle/src/libEGL/resource.h
+mozilla/gfx/angle/src/libGLESv2/libGLESv2.rc
+mozilla/gfx/angle/src/libGLESv2/resource.h
+mozilla/other-licenses/nsis/Contrib/ApplicationID/ApplicationID.rc
+mozilla/other-licenses/nsis/Contrib/ApplicationID/resource.h
+mozilla/other-licenses/nsis/Contrib/ServicesHelper/ServicesHelper.rc
+mozilla/other-licenses/nsis/Contrib/ServicesHelper/resource.h
+mozilla/toolkit/components/maintenanceservice/maintenanceservice.rc
+mozilla/toolkit/components/maintenanceservice/resource.h
+mozilla/toolkit/crashreporter/client/crashreporter.rc
+mozilla/toolkit/crashreporter/client/resource.h
+mozilla/toolkit/mozapps/update/updater/resource.h
+mozilla/toolkit/mozapps/update/updater/updater.rc

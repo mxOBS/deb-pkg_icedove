@@ -1,0 +1,160 @@
+#!/usr/bin/make -f
+
+BRANDING_DIR_ICEDOVE := mail/branding/icedove
+MODDIR := debian/calendar-google-provider/usr/share/xul-ext/calendar-google-provider/modules
+
+ICEDOVE_VERSION=$(shell tail -1 mail/config/version.txt)
+DEB_AUTO_UPDATE_AUTOCONF=2.13
+
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/buildflags.mk
+
+# special CFLAGS for various platforms
+ifeq ($(DEB_BUILD_ARCH),armel)
+       CFLAGS += -D__ARM_PCS
+endif
+
+# special LDFLAGS for various platforms
+ifeq ($(DEB_BUILD_ARCH),alpha)
+	LDFLAGS += -Wl,--no-relax
+endif
+
+# Reduce memory usage of the linker at the expense of processing time
+# This should help on lower-end architectures like arm and mips, which
+# spend an immense amount of time swapping.
+ifneq ($(DEB_BUILD_ARCH),ia64)
+	LDFLAGS += -Wl,--no-keep-memory -Wl,--reduce-memory-overheads
+endif
+ifneq ($(DEB_BUILD_ARCH),alpha)
+	LDFLAGS += -Wl,--no-keep-memory
+endif
+# Also add execution time and memory usage stats in the logs
+LDFLAGS += -Wl,--stats
+
+export MOZCONFIG=$(shell pwd)/mozconfig.icedove
+export MOZILLA_OFFICIAL=1
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	# update config.sub and config.guess
+	dh_autotools-dev_updateconfig
+	# run autoconf for all configure files
+	if [ "Z$(DEB_AUTO_UPDATE_AUTOCONF)" != Z ] || [ ! -e $(CURDIR)/configure ]; \
+	then cd $(CURDIR) && `which autoconf$(DEB_AUTO_UPDATE_AUTOCONF) || which autoconf`; fi
+	if [ "Z$(DEB_AUTO_UPDATE_AUTOCONF)" != Z ] || [ ! -e $(CURDIR)/mozilla/configure ]; \
+	then cd $(CURDIR)/mozilla && `which autoconf$(DEB_AUTO_UPDATE_AUTOCONF) || which autoconf`; fi
+	if [ "Z$(DEB_AUTO_UPDATE_AUTOCONF)" != Z ] || [ ! -e $(CURDIR)/mozilla/js/src/configure ]; \
+	then cd $(CURDIR)/mozilla/js/src && `which autoconf$(DEB_AUTO_UPDATE_AUTOCONF) || which autoconf`; fi
+	if [ "Z$(DEB_AUTO_UPDATE_AUTOCONF)" != Z ] || [ ! -e $(CURDIR)/ldap/sdks/c-sdk/configure ]; \
+	then cd $(CURDIR)/ldap/sdks/c-sdk && `which autoconf$(DEB_AUTO_UPDATE_AUTOCONF) || which autoconf`; fi
+	# prepare branding for the Icedove packages
+	mkdir -p $(BRANDING_DIR_ICEDOVE)
+	# copy needed icons
+	cp -a debian/icedove-branding/*    $(BRANDING_DIR_ICEDOVE)
+	cp debian/app-icons/icedove16.png  $(BRANDING_DIR_ICEDOVE)/mailicon16.png
+	cp debian/app-icons/icedove22.png  $(BRANDING_DIR_ICEDOVE)/mailicon22.png
+	cp debian/app-icons/icedove24.png  $(BRANDING_DIR_ICEDOVE)/mailicon24.png
+	cp debian/app-icons/icedove32.png  $(BRANDING_DIR_ICEDOVE)/mailicon32.png
+	cp debian/app-icons/icedove48.png  $(BRANDING_DIR_ICEDOVE)/mailicon48.png
+	cp debian/app-icons/icedove256.png $(BRANDING_DIR_ICEDOVE)/mailicon256.png
+	cp debian/app-icons/icedove48.png  $(BRANDING_DIR_ICEDOVE)/content/icon48.png
+	cp debian/app-icons/icedove64.png  $(BRANDING_DIR_ICEDOVE)/content/icon64.png
+	cp debian/preview.png mail/themes/linux/mail/preview.png
+	# copy needed jquery things (previous cleaned for Debian DFSG)
+	cp /usr/share/javascript/jquery/jquery.min.js mail/jquery/
+	cp /usr/share/javascript/jquery-ui/jquery-ui.min.js mail/jquery/
+	# copy the mozconfig files
+	cp debian/mozconfig.* .
+	cp debian/mozconfig.default mozilla/
+	echo 'mk_add_options MOZ_OBJDIR=$(CURDIR)/obj-icedove' >> mozconfig.icedove
+	# configure the various build settings
+	# icedove, icedove-dev, calendar-google-provider, iceowl-extension
+	make -f client.mk configure
+
+override_dh_auto_build:
+	# building the stuff
+	make -f client.mk build
+
+override_dh_auto_install:
+	make -f client.mk install DESTDIR=$(CURDIR)/debian/tmp
+
+override_dh_install:
+	dh_install
+	# adjust Icedove version in pkg-config file
+	sed -i 's/@Version@/$(ICEDOVE_VERSION)/' debian/icedove-dev/usr/lib/pkgconfig/icedove.pc
+	# prepare iceowl-extension
+	cd debian/iceowl-extension/usr/lib/iceowl-extension/ &&\
+		unzip $(CURDIR)/obj-icedove/mozilla/dist/xpi-stage/lightning*.xpi
+	# remove executable rights on *.js, *.png, *.xul files
+	find debian/iceowl-extension/ -type f -name "*.js"  -exec chmod 644 {} \;
+	find debian/iceowl-extension/ -type f -name "*.png" -exec chmod 644 {} \;
+	find debian/iceowl-extension/ -type f -name "*.xul" -exec chmod 644 {} \;
+	# moving skins and icon stuff to /usr/share/iceowl-extension/
+	mv debian/iceowl-extension/usr/lib/iceowl-extension/chrome/skin debian/iceowl-extension/usr/share/iceowl-extension/chrome/
+	mv debian/iceowl-extension/usr/lib/iceowl-extension/chrome/icons debian/iceowl-extension/usr/share/iceowl-extension/chrome/
+	cd debian/iceowl-extension/usr/lib/iceowl-extension/chrome && ln -s ../../../share/iceowl-extension/chrome/skin/
+	cd debian/iceowl-extension/usr/lib/iceowl-extension/chrome && ln -s ../../../share/iceowl-extension/chrome/icons/
+	# sometimes there are temporary build files in iceowl-extension
+	@echo "    --> searching for temporary build files in 'iceowl-extension' ..."
+	@for i in `find debian/iceowl-extension/ -name ".mkdir.done*"`; do echo remove $$i && rm $$i; done
+	# prepare calendar-google-provider
+	mkdir -p debian/calendar-google-provider/usr/share/xul-ext/calendar-google-provider/
+	cd debian/calendar-google-provider/usr/share/xul-ext/calendar-google-provider/ && \
+		unzip $(CURDIR)/obj-icedove/mozilla/dist/xpi-stage/gdata-provider*.xpi
+	# sometimes there are temporary build files in calendoar-google-provider
+	@echo "    --> searching for temporary build files in 'calendar-google-provider' ..."
+	@for i in `find debian/calendar-google-provider/ -name ".mkdir.done*"`; do echo remove $$i && rm $$i; done
+	mkdir $(MODDIR)/shim
+	mv $(MODDIR)/Calendar.jsm $(MODDIR)/shim/
+	mv $(MODDIR)/Http.jsm $(MODDIR)/shim/
+	mv $(MODDIR)/Loader.jsm $(MODDIR)/shim/
+	mv $(MODDIR)/Preferences.jsm $(MODDIR)/shim/
+	mv $(MODDIR)/Promise.jsm $(MODDIR)/shim/
+	mv $(MODDIR)/Task.jsm $(MODDIR)/shim/
+	mv $(MODDIR)/Timer.jsm $(MODDIR)/shim/
+	# install Icedove menu icon
+	install -d -m 755 debian/icedove/usr/share/pixmaps/
+	install -m 644 debian/icedove.xpm debian/icedove/usr/share/pixmaps/
+	# install Icedove icons
+	install -d -m 755 debian/icedove/usr/share/icons/hicolor/16x16/apps
+	install -m 644 debian/app-icons/icedove16.png \
+		debian/icedove/usr/share/icons/hicolor/16x16/apps/icedove.png
+	install -d -m 755 debian/icedove/usr/share/icons/hicolor/32x32/apps
+	install -m 644 debian/app-icons/icedove32.png \
+		debian/icedove/usr/share/icons/hicolor/32x32/apps/icedove.png
+	install -d -m 755 debian/icedove/usr/share/icons/hicolor/64x64/apps
+	install -m 644 debian/app-icons/icedove64.png \
+		debian/icedove/usr/share/icons/hicolor/64x64/apps/icedove.png
+	install -d -m 755 debian/icedove/usr/share/icons/hicolor/128x128/apps
+	install -m 644 debian/app-icons/icedove128.png \
+		debian/icedove/usr/share/icons/hicolor/128x128/apps/icedove.png
+	install -d -m 755 debian/icedove/usr/share/icons/hicolor/scalable/apps
+	install -m 644 debian/app-icons/icedovebig.svg \
+		debian/icedove/usr/share/icons/hicolor/scalable/apps/icedove.svg
+	# remove duplicate .so files in dev package
+	rm debian/icedove-dev/usr/lib/icedove-devel/sdk/lib/libmozalloc.so
+	rm debian/icedove-dev/usr/lib/icedove-devel/sdk/lib/libxul.so
+
+override_dh_fixperms:
+	dh_fixperms
+	chmod a-x debian/icedove-dev/usr/share/idl/icedove/*.idl
+	chmod 0755 debian/icedove-dev/usr/lib/icedove-devel/sdk/bin/xpcshell
+	chmod 0755 debian/icedove-dev/usr/lib/icedove-devel/sdk/bin/header.py
+	chmod 0755 debian/icedove-dev/usr/lib/icedove-devel/sdk/bin/typelib.py
+	chmod 0755 debian/icedove-dev/usr/lib/icedove-devel/sdk/bin/xpidl.py
+	chmod 0755 debian/icedove-dev/usr/lib/icedove-devel/sdk/bin/xpt.py
+
+override_dh_strip:
+	dh_strip --dbg-package=icedove-dbg
+
+override_dh_shlibdeps:
+	dh_shlibdeps -a -l $(CURDIR)/debian/tmp/usr/lib/icedove -Xlibmozgnome -Xlibdbusservice
+	LD_LIBRARY_PATH=$(CURDIR)/debian/tmp/usr/lib/icedove dpkg-shlibdeps \
+		-Tdebian/icedove.substvars \
+		-dDepends \
+		-pgnome $(foreach lib,dbusservice mozgnome,debian/icedove/usr/lib/icedove/components/lib$(lib).so)
+
+override_dh_builddeb:
+	dh_builddeb -- -Zxz
